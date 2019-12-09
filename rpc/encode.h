@@ -10,6 +10,10 @@
 #include <cryptopp/keccak.h>
 #include <boost/locale.hpp>
 
+#ifdef CRYPTOPP_NO_GLOBAL_BYTE
+typedef unsigned char byte;
+#endif
+
 typedef std::vector<byte> bytes;
 
 bytes get_method_id(std::string msg) {
