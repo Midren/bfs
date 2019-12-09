@@ -2,10 +2,10 @@
 #define RPC_RPC_H
 
 #include <string>
-#include <vector>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+
 #include "encode.h"
 
 enum eth_method {
@@ -24,7 +24,7 @@ public:
 
     int create_file(std::string path);
 
-    int write_file(std::string path, uint8_t *bytes, size_t length);
+    int write_file(std::string path, uint8_t *data, size_t length);
 
     int read_file(std::string path, uint8_t *buf, size_t buf_size);
 
