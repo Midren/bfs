@@ -13,10 +13,9 @@ enum eth_method {
     send
 };
 
-class rpc {
+class Rpc {
 public:
-
-    rpc() {
+    Rpc() {
 
     }
 
@@ -46,7 +45,7 @@ private:
 };
 
 template<typename... Args>
-std::string rpc::form_json(eth_method method, const std::string &func_sig, Args... args) {
+std::string Rpc::form_json(eth_method method, const std::string &func_sig, Args... args) {
     boost::property_tree::ptree pt{};
     pt.put("jsonrpc", 2.0);
     switch (method) {
