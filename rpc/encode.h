@@ -7,6 +7,11 @@
 #include <string>
 
 #include <cryptopp/cryptlib.h>
+
+#ifdef CRYPTOPP_NO_GLOBAL_BYTE
+typedef unsigned char byte;
+#endif
+
 typedef std::vector<byte> bytes;
 
 bytes get_method_id(const std::string &msg);
