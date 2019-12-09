@@ -58,7 +58,7 @@ std::string Rpc::form_json(eth_method method, const std::string &func_sig, Args.
         case eth_method::send:
             //FIXME: add from parameter
             //FIXME: from -- adress of User
-            pt.put("method", "eth_sendTransactioon");
+            pt.put("method", "eth_sendTransaction");
     }
     pt.put("to", to_string(encode(memoryManagerAddress)));
     pt.put("data", to_string(encode(func_sig, args...)));
