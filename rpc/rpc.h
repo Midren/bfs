@@ -5,6 +5,9 @@
 #include <vector>
 
 #include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include "encode.h"
+
 enum eth_method {
     call,
     send
@@ -39,11 +42,11 @@ public:
 
 private:
     template<typename... Args>
-    boost::property_tree::ptree form_json(eth_method method, Args... args);
+    std::string form_json(eth_method method, const std::string &func_sig, Args... args);
 };
 
 template<typename... Args>
-boost::property_tree::ptree rpc::form_json(eth_method method, Args... args) {
+std::string rpc::form_json(eth_method method, const std::string &func_sig, Args... args) {
     boost::property_tree::ptree pt{};
     pt.put("jsonrpc", 2.0);
     switch (method) {
@@ -52,9 +55,11 @@ boost::property_tree::ptree rpc::form_json(eth_method method, Args... args) {
         case eth_method::send:
             pt.put("method", "eth_sendTransactioon");
     }
+    pt.put("data", to_string(encode(func_sig, args...)));
 
-
-    return pt;
+    std::stringstream ss;
+    boost::property_tree::json_parser::write_json(ss, pt);
+    return ss.str();
 }
 
 

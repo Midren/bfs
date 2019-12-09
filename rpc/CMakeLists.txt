@@ -9,6 +9,6 @@ find_package(CryptoPP REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIR} ${CRYPTOPP_INCLUDE_DIR})
 
-add_executable(rpc main.cpp rpc.cpp rpc.h encode.h)
+add_executable(rpc main.cpp rpc.cpp rpc.h encode.h encode.cpp)
 
 target_link_libraries(rpc LINK_PUBLIC ${Boost_LIBRARIES} ${CRYPTOPP_LIBRARIES})
