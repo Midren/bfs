@@ -5,20 +5,10 @@
 #include <vector>
 
 #include <boost/property_tree/ptree.hpp>
-
-#include <cryptopp/cryptlib.h>
-#include <cryptopp/keccak.h>
-
 enum eth_method {
     call,
     send
 };
-
-typedef std::array<byte, 4> method_id;
-
-method_id get_method_id(std::string msg);
-
-std::vector<byte> encode_string(std::string);
 
 class rpc {
 public:
