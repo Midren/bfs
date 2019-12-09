@@ -16,7 +16,8 @@ enum eth_method {
 class Rpc {
 public:
     Rpc() {
-
+        //FIXME: add correct address
+        Rpc::memoryManagerAddress = {0};
     }
 
     /* Work with files */
@@ -42,7 +43,10 @@ public:
 private:
     template<typename... Args>
     std::string form_json(eth_method method, const std::string &func_sig, Args... args);
+
+    static bytes memoryManagerAddress;
 };
+
 
 template<typename... Args>
 std::string Rpc::form_json(eth_method method, const std::string &func_sig, Args... args) {
@@ -52,8 +56,11 @@ std::string Rpc::form_json(eth_method method, const std::string &func_sig, Args.
         case eth_method::call:
             pt.put("method", "eth_call");
         case eth_method::send:
+            //FIXME: add from parameter
+            //FIXME: from -- adress of User
             pt.put("method", "eth_sendTransactioon");
     }
+    pt.put("to", to_string(encode(memoryManagerAddress)));
     pt.put("data", to_string(encode(func_sig, args...)));
 
     std::stringstream ss;
