@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.14)
 project(rpc)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CmakeConfig)
-set(CURL_LIBRARY "-lcurl")
 
 set(CMAKE_CXX_STANDARD 17)
 find_package(Boost COMPONENTS locale)
