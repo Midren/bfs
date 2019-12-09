@@ -5,19 +5,38 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-
+#include <curl/curl.h>
 #include "encode.h"
+
+std::string send_request(const std::string &json);
+
+CURL *curlPtr(bool cleanup);
+
+inline void curl_init() {
+    curlPtr(false);
+}
+
+inline void curl_clean() {
+    curlPtr(true);
+}
+
+size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata);
 
 enum eth_method {
     call,
-    send
+    sendTx
 };
 
 class Rpc {
 public:
-    Rpc() {
+    explicit Rpc(const bytes &Addr) : fromAddr{Addr} {
         //FIXME: add correct address
         Rpc::memoryManagerAddress = {0};
+        curl_init();
+    }
+
+    ~Rpc() {
+        curl_clean();
     }
 
     /* Work with files */
@@ -41,10 +60,12 @@ public:
     int remove_dir(std::string path);
 
 private:
+    bytes fromAddr;
+
     template<typename... Args>
     std::string form_json(eth_method method, const std::string &func_sig, Args... args);
 
-    static bytes memoryManagerAddress;
+    bytes memoryManagerAddress;
 };
 
 
@@ -55,13 +76,12 @@ std::string Rpc::form_json(eth_method method, const std::string &func_sig, Args.
     switch (method) {
         case eth_method::call:
             pt.put("method", "eth_call");
-        case eth_method::send:
-            //FIXME: add from parameter
-            //FIXME: from -- adress of User
+        case eth_method::sendTx:
             pt.put("method", "eth_sendTransaction");
     }
-    pt.put("to", to_string(encode(memoryManagerAddress)));
-    pt.put("data", to_string(encode(func_sig, args...)));
+    pt.put("params.from", to_string(fromAddr));
+    pt.put("params.to", to_string(encode(memoryManagerAddress)));
+    pt.put("params.data", to_string(encode(func_sig, args...)));
 
     std::stringstream ss;
     boost::property_tree::json_parser::write_json(ss, pt);
