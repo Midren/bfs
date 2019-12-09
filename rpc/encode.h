@@ -10,8 +10,10 @@
 #include <cryptopp/keccak.h>
 #include <boost/locale.hpp>
 
-std::vector<byte> get_method_id(std::string msg) {
-    std::vector<byte> digest;
+typedef std::vector<byte> bytes;
+
+bytes get_method_id(std::string msg) {
+    bytes digest;
     CryptoPP::Keccak_256 hash;
     hash.Update((const byte *) msg.data(), msg.size());
     std::string tmp;
@@ -22,8 +24,8 @@ std::vector<byte> get_method_id(std::string msg) {
     return digest;
 }
 
-std::vector<byte> encode(uint64_t num) {
-    std::vector<byte> vec;
+bytes encode(uint64_t num) {
+    bytes vec;
     byte tmp[4];
     memcpy(tmp, (byte *) &num, 4);
     int non_zero = 0;
@@ -37,7 +39,7 @@ std::vector<byte> encode(uint64_t num) {
     return vec;
 }
 
-std::vector<byte> encode(std::string str) {
+bytes encode(std::string str) {
     auto utf_str = boost::locale::conv::to_utf<char>(str, "UTF-8");
     uint32_t sz = utf_str.length();
     auto vec = encode(sz);
@@ -48,16 +50,17 @@ std::vector<byte> encode(std::string str) {
     return vec;
 }
 
-std::vector<byte> encode(const std::vector<byte> &bytes) {
+bytes encode(const bytes &bytes) {
     auto vec = encode(bytes.size());
     for (auto byte : bytes)
         vec.push_back(byte);
     while (vec.size() % 32 != 0)
         vec.push_back(0);
+    return vec;
 }
 
 template<typename... Args>
-std::vector<byte> encode(std::string func, Args... args) {
+bytes encode(std::string func, Args... args) {
     auto res = get_method_id(func);
     std::stringstream ss{func};
 
@@ -66,14 +69,14 @@ std::vector<byte> encode(std::string func, Args... args) {
 
     int param_count = 0;
     std::vector<std::any> values{args...};
-    std::vector<std::vector<byte>> params;
+    std::vector<bytes> params;
     while (std::getline(ss, word, ',')) {
         if (word[word.size() - 1] == ')')
             word = word.substr(0, word.size() - 1);
         if (word == "string") {
             params.emplace_back(encode(std::any_cast<std::string>(values[param_count])));
         } else if (word == "byte[]") {
-            params.emplace_back(encode(std::any_cast<std::vector<byte>>(values[param_count])));
+            params.emplace_back(encode(std::any_cast<bytes>(values[param_count])));
         }
         param_count++;
     }
@@ -87,6 +90,17 @@ std::vector<byte> encode(std::string func, Args... args) {
         for (auto &j: i)
             res.push_back(j);
     return res;
+}
+
+std::string to_string(bytes data) {
+    std::string res;
+    char hex_byte[2];
+    for (const auto &byte: data) {
+        sprintf(hex_byte, "%02x", byte);
+        res.push_back(hex_byte[0]);
+        res.push_back(hex_byte[1]);
+    }
+    return "0x" + res;
 }
 
 #endif //RPC_ENCODE_H
