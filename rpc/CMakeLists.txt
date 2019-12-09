@@ -8,8 +8,7 @@ find_package(Boost COMPONENTS locale)
 find_package(CryptoPP REQUIRED)
 find_package(CURL REQUIRED)
 
-include_directories(${Boost_INCLUDE_DIR} ${CRYPTOPP_INCLUDE_DIR})
-include_directories(${CURL_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR} ${CRYPTOPP_INCLUDE_DIR} ${CURL_INCLUDE_DIR})
 
 add_executable(rpc main.cpp rpc.cpp rpc.h encode.h encode.cpp)
 
