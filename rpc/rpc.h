@@ -31,7 +31,7 @@ class Rpc {
 public:
     explicit Rpc(const bytes &Addr) : fromAddr{Addr} {
         //FIXME: add correct address
-        Rpc::memoryManagerAddress = {0};
+        Rpc::memoryManagerAddress = {0x29, 0x25, 0xB5, 0xA6, 0x74, 0x52, 0x71, 0x95, 0x71, 0x03, 0x90, 0xB5, 0xA7, 0xCD, 0x35, 0x79, 0xdE, 0xaB, 0x7f, 0x67};
         curl_init();
     }
 
@@ -71,17 +71,33 @@ private:
 
 template<typename... Args>
 std::string Rpc::form_json(eth_method method, const std::string &func_sig, Args... args) {
+    static int id = 16000;
     boost::property_tree::ptree pt{};
-    pt.put("jsonrpc", 2.0);
+    pt.put("jsonrpc", "2.0");
     switch (method) {
         case eth_method::call:
             pt.put("method", "eth_call");
+            break;
         case eth_method::sendTx:
             pt.put("method", "eth_sendTransaction");
+            break;
     }
-    pt.put("params.from", to_string(fromAddr));
-    pt.put("params.to", to_string(encode(memoryManagerAddress)));
-    pt.put("params.data", to_string(encode(func_sig, args...)));
+    pt.put("id", id++);
+
+    //FIXME: Hard Code
+
+    boost::property_tree::ptree params_list;
+    boost::property_tree::ptree params;
+
+    params.put("from", "0x00c469eee8b9bc1a331070be0e5814a0bc6f902e");
+    params.put("to", to_string(memoryManagerAddress));
+    params.put("data", to_string(encode(func_sig, args...)));
+    params_list.push_back(std::make_pair("", params));
+    boost::property_tree::ptree block_time;
+    block_time.put("", "latest");
+    params_list.push_back(std::make_pair("", block_time));
+//    params.put("", "latest");
+    pt.add_child("params", params_list);
 
     std::stringstream ss;
     boost::property_tree::json_parser::write_json(ss, pt);
