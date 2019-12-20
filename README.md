@@ -4,7 +4,7 @@
  - [Installing](#installing)
  - [Usage](#usage)
  - [Team](#team)
- - [Documentation](https://github.com/RomanMilishchuk/bfs/wiki)
+ - [Documentation](#documentation)
  
  
 ## Installing
@@ -16,6 +16,9 @@ Will be added, as soon, as adequate installing will be available
 ```
 You really want to use it ???
 ```
+
+## Documentation
+All documentation can be found in the [wiki](https://github.com/RomanMilishchuk/bfs/wiki) pages.
 
 ## Team
 | **Roman Milishchuk** | **Hermann Yavorskyi** | **Yurii Yelisieiev** |
