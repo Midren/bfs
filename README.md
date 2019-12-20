@@ -8,6 +8,10 @@
  
  
 ## Installing
+Depends on the next C++ libraries:
+- Boost
+- Crypto++
+- Curl
 ```
 Will be added, as soon, as adequate installing will be available
 ```
