@@ -12,13 +12,23 @@ Depends on the next C++ libraries:
 - Boost
 - Crypto++
 - Curl
+
+For Ubuntu:
+```sh
+sudo apt install libboost-all-dev libcrypto++-dev libcurl4-gnutls-dev
 ```
-Will be added, as soon, as adequate installing will be available
-```
+
+Full instalation will be, when next will implemented:
+
+- [ ] RPC moved to static library
+- [ ] Added FUSE driver
+- [ ] Added deploying contract from C++
+
     
 ## Usage
 ```
 You really want to use it ???
+(If yes, just use Remix IDE)
 ```
 
 ## Documentation
