@@ -20,6 +20,7 @@ int bfs_mkdir(const char *path, mode_t) {
     return RPC.create_dir(path);
 }
 
+
 struct fuse_operations bfs_operations = {
         .open = [](const char *, int) { return 0; }, // We don`t need to open a file in BFS, TODO: Check if file exists
         .mknod = bfs_create_file,
@@ -28,7 +29,7 @@ struct fuse_operations bfs_operations = {
         .mkdir = bfs_mkdir
 };
 
-int bfs_main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
     if ((getuid() == 0) || (geteuid() == 0)) {
         std::cout << "[WARNING]:\t Running as root!" << std::endl;
     }
