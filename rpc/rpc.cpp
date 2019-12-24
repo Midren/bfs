@@ -36,7 +36,7 @@ int Rpc::write_file(std::string path, uint8_t *data, size_t length) {
         bt.emplace_back(data[i]);
     auto json = form_json(eth_method::sendTx, func_signature, path, bt);
     try {
-        std::cout << curl.send_request(json) << std::endl;
+        return get_tx_status(process_json(eth_method::sendTx, curl.send_request(json)));
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return -1;
@@ -48,7 +48,9 @@ int Rpc::read_file(std::string path, uint8_t *buf, size_t buf_size, off_t offset
     static std::string func_signature{"read(string)"};
     auto json = form_json(eth_method::call, func_signature, path);
     try {
-        auto res = decode_bytes(process_json(eth_method::call, curl.send_request(json)));
+        auto tmp = curl.send_request(json);
+
+        auto res = decode_bytes(process_json(eth_method::call, tmp));
         memcpy(buf, res.data() + offset, std::min(buf_size, res.size() - offset));
         return std::min(buf_size, res.size() - offset);
     } catch (const std::exception &e) {
@@ -116,7 +118,7 @@ std::string Rpc::form_json(eth_method method, const std::string &func_sig, Args.
     }
     if (method == eth_method::call) {
         boost::property_tree::ptree block_time;
-        block_time.put("", "latest");
+        block_time.put("", "pending");
         params_list.push_back(std::make_pair("", block_time));
     }
     pt.add_child("params", params_list);
