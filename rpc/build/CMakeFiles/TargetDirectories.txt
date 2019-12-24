@@ -1,0 +1,3 @@
+/home/hermann/Ucu/OS_2019/Project/bfs/rpc/build/CMakeFiles/rebuild_cache.dir
+/home/hermann/Ucu/OS_2019/Project/bfs/rpc/build/CMakeFiles/rpc.dir
+/home/hermann/Ucu/OS_2019/Project/bfs/rpc/build/CMakeFiles/edit_cache.dir

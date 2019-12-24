@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/hermann/Ucu/OS_2019/Project/bfs/rpc/encode.h
+array
+-
+string
+-
+sstream
+-
+any
+-
+cryptopp/cryptlib.h
+-
+cryptopp/keccak.h
+-
+boost/locale.hpp
+-
+
+/home/hermann/Ucu/OS_2019/Project/bfs/rpc/main.cpp
+iostream
+-
+rpc.h
+/home/hermann/Ucu/OS_2019/Project/bfs/rpc/rpc.h
+encode.h
+/home/hermann/Ucu/OS_2019/Project/bfs/rpc/encode.h
+
+/home/hermann/Ucu/OS_2019/Project/bfs/rpc/rpc.h
+string
+-
+vector
+-
+boost/property_tree/ptree.hpp
+-
+

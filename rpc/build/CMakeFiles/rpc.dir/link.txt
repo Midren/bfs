@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/rpc.dir/main.cpp.o CMakeFiles/rpc.dir/rpc.cpp.o  -o rpc /usr/lib64/libboost_locale.so.1.71.0 /usr/lib/libcryptopp.so /usr/lib64/libboost_chrono.so.1.71.0 /usr/lib64/libboost_system.so.1.71.0 /usr/lib64/libboost_thread.so.1.71.0 -lpthread 
