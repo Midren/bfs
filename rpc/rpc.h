@@ -10,7 +10,8 @@
 
 enum eth_method {
     call,
-    sendTx
+    sendTx,
+    getTxReceipt
 };
 
 class Rpc {
@@ -29,7 +30,7 @@ public:
 
     int write_file(std::string path, uint8_t *data, size_t length);
 
-    int read_file(std::string path, uint8_t *buf, size_t buf_size);
+    int read_file(std::string path, uint8_t *buf, size_t buf_size, off_t offset);
 
     ssize_t get_file_size(std::string path);
 
@@ -50,6 +51,10 @@ private:
 
     template<typename... Args>
     std::string form_json(eth_method method, const std::string &func_sig, Args... args);
+
+    static std::string process_json(eth_method method, const std::string &json);
+
+    bool get_tx_status(const std::string &hash);
 };
 
 #include "rpc.cpp"

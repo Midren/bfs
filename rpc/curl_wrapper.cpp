@@ -36,10 +36,8 @@ std::string Curl::send_request(const std::string &json) {
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
     CURLcode res = curl_easy_perform(curl);
-    if (res != CURLE_OK) {
-        std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
-        return ""; // FIXME: ERROR STRING
-    }
+    if (res != CURLE_OK)
+        throw std::runtime_error("curl_easy_perform() failed: " + std::string(curl_easy_strerror(res)));
     return result;
 }
 
