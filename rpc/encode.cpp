@@ -43,16 +43,32 @@ bytes encode(const std::string &str) {
 
 bytes encode(const bytes &bytes) {
     auto vec = encode(bytes.size());
-    for (auto byte : bytes)
+    for (auto byte : bytes) {
         vec.push_back(byte);
-    while (vec.size() % 32 != 0)
-        vec.push_back(0);
+        for (int i = 1; i < 32; i++)
+            vec.push_back(0);
+    }
     return vec;
+}
+
+bytes from_hex(const std::string &str) {
+    bytes res;
+    for (auto i = 0; i < str.length(); i += 2) {
+        std::stringstream ss;
+        auto byte_str = str.substr(i, 2);
+        if (byte_str == "0x")
+            continue;
+        unsigned int byte;
+        ss << std::hex << byte_str;
+        ss >> byte;
+        res.push_back(byte);
+    }
+    return res;
 }
 
 std::string to_string(const bytes &data) {
     std::string res;
-    char hex_byte[2];
+    char hex_byte[3];
     for (const auto &byte: data) {
         sprintf(hex_byte, "%02x", byte);
         res.push_back(hex_byte[0]);

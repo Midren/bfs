@@ -11,8 +11,8 @@ int Rpc::create_file(std::string path) {
 }
 
 int Rpc::write_file(std::string path, uint8_t *data, size_t length) {
-    static std::string func_signature{"write(string,byte[])"};
-    bytes bt(length);
+    static std::string func_signature{"write(string,bytes1[])"};
+    bytes bt{};
     for (int i = 0; i < length; i++)
         bt.emplace_back(data[i]);
     auto json = form_json(eth_method::sendTx, func_signature, path, bt);

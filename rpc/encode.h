@@ -14,6 +14,8 @@ typedef unsigned char byte;
 
 typedef std::vector<byte> bytes;
 
+bytes from_hex(const std::string &str);
+
 bytes get_method_id(const std::string &msg);
 
 bytes encode(uint64_t num);
@@ -38,7 +40,7 @@ bytes encode(const std::string &func, Args... args) {
             word = word.substr(0, word.size() - 1);
         if (word == "string") {
             params.emplace_back(encode(std::any_cast<std::string>(values[param_count])));
-        } else if (word == "byte[]") {
+        } else if (word == "bytes1[]") {
             params.emplace_back(encode(std::any_cast<bytes>(values[param_count])));
         }
         param_count++;

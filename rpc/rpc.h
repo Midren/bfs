@@ -29,9 +29,13 @@ enum eth_method {
 
 class Rpc {
 public:
-    explicit Rpc(const bytes &Addr) : fromAddr{Addr} {
-        //FIXME: add correct address
-        Rpc::memoryManagerAddress = {0x29, 0x25, 0xB5, 0xA6, 0x74, 0x52, 0x71, 0x95, 0x71, 0x03, 0x90, 0xB5, 0xA7, 0xCD, 0x35, 0x79, 0xdE, 0xaB, 0x7f, 0x67};
+    explicit Rpc(const bytes &userAddr, const bytes &mmAddress) : fromAddr{userAddr}, memoryManagerAddress{mmAddress} {
+        curl_init();
+    }
+
+    explicit Rpc(const std::string &userAddr, const std::string &mmAddress) : fromAddr{from_hex(userAddr)},
+                                                                              memoryManagerAddress{
+                                                                                      from_hex(mmAddress)} {
         curl_init();
     }
 
@@ -71,7 +75,7 @@ private:
 
 template<typename... Args>
 std::string Rpc::form_json(eth_method method, const std::string &func_sig, Args... args) {
-    static int id = 16000;
+    static int id = 1;
     boost::property_tree::ptree pt{};
     pt.put("jsonrpc", "2.0");
     switch (method) {
@@ -84,18 +88,22 @@ std::string Rpc::form_json(eth_method method, const std::string &func_sig, Args.
     }
     pt.put("id", id++);
 
-    //FIXME: Hard Code
-
     boost::property_tree::ptree params_list;
     boost::property_tree::ptree params;
 
-    params.put("from", "0x00c469eee8b9bc1a331070be0e5814a0bc6f902e");
+    params.put("from", to_string(fromAddr));
     params.put("to", to_string(memoryManagerAddress));
     params.put("data", to_string(encode(func_sig, args...)));
+    if (method == eth_method::sendTx) {
+        params.put("value", "0x0");
+        params.put("gas", "0x76c0");
+    }
     params_list.push_back(std::make_pair("", params));
     boost::property_tree::ptree block_time;
-    block_time.put("", "latest");
-    params_list.push_back(std::make_pair("", block_time));
+    if (method == eth_method::call) {
+        block_time.put("", "latest");
+        params_list.push_back(std::make_pair("", block_time));
+    }
 //    params.put("", "latest");
     pt.add_child("params", params_list);
 
