@@ -1,39 +1,52 @@
 #include "curl_wrapper.h"
 
-#include <iostream>
+//CURL *curlPtr(bool cleanup) {
+//    static CURL *curl = nullptr;
+//    static struct curl_slist *headers = nullptr;
+//    if (!curl) {
+//        curl = curl_easy_init();
+//        if (!curl) {
+//            std::cerr << "Curl failed to initialize. Quitting..." << std::endl;
+//            exit(0);
+//        }
+//        headers = curl_slist_append(headers, "Content-Type: application/json");
+//        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+//        curl_easy_setopt(curl, CURLOPT_URL, "http:/""/localhost:8545");
+//    } else if (cleanup) {
+//        if (headers) curl_slist_free_all(headers);
+//        if (curl) curl_easy_cleanup(curl);
+//        curl = nullptr;
+//    }
+//    return curl;
+//}
 
-#include <curl/curl.h>
-
-CURL *curlPtr(bool cleanup) {
-    static CURL *curl = NULL;
-    static struct curl_slist *headers = NULL;
-    if (!curl) {
-        curl = curl_easy_init();
-        if (!curl) {
-            std::cerr << "Curl failed to initialize. Quitting..." << std::endl;
-            exit(0);
-        }
-        headers = curl_slist_append(headers, "Content-Type: application/json");
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-        curl_easy_setopt(curl, CURLOPT_URL, "http:/""/localhost:8545");
-    } else if (cleanup) {
-        if (headers) curl_slist_free_all(headers);
-        if (curl) curl_easy_cleanup(curl);
-        curl = NULL;
-    }
-    return curl;
+Curl::Curl() {
+    curl = curl_easy_init();
+    if (!curl)
+        throw std::runtime_error("Cannot initialize curl");
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_URL, "http:/""/localhost:8545");
 }
 
-
-void curl_init() {
-    curlPtr(false);
+std::string Curl::send_request(const std::string &json) {
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, json.length());
+    std::string result;
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+    CURLcode res = curl_easy_perform(curl);
+    if (res != CURLE_OK)
+        throw std::runtime_error("curl_easy_perform() failed: " + std::string(curl_easy_strerror(res)));
+    return result;
 }
 
-void curl_clean() {
-    curlPtr(true);
+void Curl::cleanup() {
+    if (headers) curl_slist_free_all(headers);
+    if (curl) curl_easy_cleanup(curl);
 }
 
-size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata) {
+size_t Curl::write_callback(char *ptr, size_t size, size_t nmemb, void *userdata) {
     std::string tmpStr;
     int cnt = 0;
     for (int i = 0; i < nmemb; i++) {
@@ -51,16 +64,6 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata) {
     return size * nmemb;
 }
 
-std::string send_request(const std::string &json) {
-    curl_easy_setopt(curlPtr(false), CURLOPT_POSTFIELDS, json.c_str());
-    curl_easy_setopt(curlPtr(false), CURLOPT_POSTFIELDSIZE, json.length());
-    std::string result;
-    curl_easy_setopt(curlPtr(false), CURLOPT_WRITEDATA, &result);
-    curl_easy_setopt(curlPtr(false), CURLOPT_WRITEFUNCTION, write_callback);
-    CURLcode res = curl_easy_perform(curlPtr(false));
-    if (res != CURLE_OK) {
-        std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
-        return ""; // FIXME: ERROR STRING
-    }
-    return result;
+Curl::~Curl() {
+    cleanup();
 }

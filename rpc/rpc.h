@@ -6,19 +6,23 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include "encode.h"
+#include "curl_wrapper.h"
 
 enum eth_method {
     call,
-    sendTx
+    sendTx,
+    getTxReceipt
 };
 
 class Rpc {
 public:
-    explicit Rpc(const bytes &userAddr, const bytes &mmAddress);
+    Rpc(const bytes &userAddr, const bytes &mmAddress) : fromAddr{userAddr},
+                                                         memoryManagerAddress{mmAddress},
+                                                         curl{} {}
 
-    explicit Rpc(const std::string &userAddr, const std::string &mmAddress);
-
-    ~Rpc();
+    Rpc(const std::string &userAddr, const std::string &mmAddress) : fromAddr{from_hex(userAddr)},
+                                                                     memoryManagerAddress{from_hex(mmAddress)},
+                                                                     curl{} {}
 
     /* Work with files */
 
@@ -26,7 +30,7 @@ public:
 
     int write_file(std::string path, uint8_t *data, size_t length);
 
-    int read_file(std::string path, uint8_t *buf, size_t buf_size);
+    int read_file(std::string path, uint8_t *buf, size_t buf_size, off_t offset);
 
     ssize_t get_file_size(std::string path);
 
@@ -42,12 +46,17 @@ public:
 
 private:
     bytes fromAddr;
+    bytes memoryManagerAddress;
+    Curl curl;
 
     template<typename... Args>
     std::string form_json(eth_method method, const std::string &func_sig, Args... args);
 
-    bytes memoryManagerAddress;
+    static std::string process_json(eth_method method, const std::string &json);
+
+    bool get_tx_status(const std::string &hash);
 };
 
 #include "rpc.cpp"
+
 #endif //RPC_RPC_H

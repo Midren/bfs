@@ -51,21 +51,6 @@ bytes encode(const bytes &bytes) {
     return vec;
 }
 
-bytes from_hex(const std::string &str) {
-    bytes res;
-    for (auto i = 0; i < str.length(); i += 2) {
-        std::stringstream ss;
-        auto byte_str = str.substr(i, 2);
-        if (byte_str == "0x")
-            continue;
-        unsigned int byte;
-        ss << std::hex << byte_str;
-        ss >> byte;
-        res.push_back(byte);
-    }
-    return res;
-}
-
 std::string to_string(const bytes &data) {
     std::string res;
     char hex_byte[3];
