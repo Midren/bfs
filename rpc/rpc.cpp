@@ -4,25 +4,11 @@
 #include <iostream>
 
 
-Rpc::Rpc(const bytes &userAddr, const bytes &mmAddress) : fromAddr{userAddr}, memoryManagerAddress{mmAddress} {
-    curl_init();
-}
-
-Rpc::Rpc(const std::string &userAddr, const std::string &mmAddress) : fromAddr{from_hex(userAddr)},
-                                                                      memoryManagerAddress{
-                                                                              from_hex(mmAddress)} {
-    curl_init();
-}
-
-Rpc::~Rpc() {
-    curl_clean();
-}
-
 int Rpc::create_file(std::string path) {
     static std::string func_signature{"create_file(string)"};
     auto json = form_json(eth_method::sendTx, func_signature, path);
     std::cout << json << std::endl;
-    std::cout << send_request(json) << std::endl;
+    std::cout << curl.send_request(json) << std::endl;
     return 0;
 }
 
@@ -33,7 +19,7 @@ int Rpc::write_file(std::string path, uint8_t *data, size_t length) {
         bt.emplace_back(data[i]);
     auto json = form_json(eth_method::sendTx, func_signature, path, bt);
     std::cout << json << std::endl;
-    std::cout << send_request(json) << std::endl;
+    std::cout << curl.send_request(json) << std::endl;
     return 0;
 }
 
@@ -41,7 +27,7 @@ int Rpc::read_file(std::string path, uint8_t *buf, size_t buf_size) {
     static std::string func_signature{"read(string)"};
     auto json = form_json(eth_method::call, func_signature, path);
     std::cout << json << std::endl;
-    std::cout << send_request(json) << std::endl;
+    std::cout << curl.send_request(json) << std::endl;
     return 0;
 }
 
@@ -68,7 +54,7 @@ std::string Rpc::form_json(eth_method method, const std::string &func_sig, Args.
     params.put("data", to_string(encode(func_sig, args...)));
     if (method == eth_method::sendTx) {
         params.put("value", "0x0");
-        params.put("gas", "0x76c0");
+        params.put("gas", "0x2dc6c0");
     }
     params_list.push_back(std::make_pair("", params));
     boost::property_tree::ptree block_time;
@@ -76,7 +62,6 @@ std::string Rpc::form_json(eth_method method, const std::string &func_sig, Args.
         block_time.put("", "latest");
         params_list.push_back(std::make_pair("", block_time));
     }
-//    params.put("", "latest");
     pt.add_child("params", params_list);
 
     std::stringstream ss;

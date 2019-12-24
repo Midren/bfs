@@ -6,6 +6,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include "encode.h"
+#include "curl_wrapper.h"
 
 enum eth_method {
     call,
@@ -14,11 +15,13 @@ enum eth_method {
 
 class Rpc {
 public:
-    explicit Rpc(const bytes &userAddr, const bytes &mmAddress);
+    Rpc(const bytes &userAddr, const bytes &mmAddress) : fromAddr{userAddr},
+                                                         memoryManagerAddress{mmAddress},
+                                                         curl{} {}
 
-    explicit Rpc(const std::string &userAddr, const std::string &mmAddress);
-
-    ~Rpc();
+    Rpc(const std::string &userAddr, const std::string &mmAddress) : fromAddr{from_hex(userAddr)},
+                                                                     memoryManagerAddress{from_hex(mmAddress)},
+                                                                     curl{} {}
 
     /* Work with files */
 
@@ -42,12 +45,13 @@ public:
 
 private:
     bytes fromAddr;
+    bytes memoryManagerAddress;
+    Curl curl;
 
     template<typename... Args>
     std::string form_json(eth_method method, const std::string &func_sig, Args... args);
-
-    bytes memoryManagerAddress;
 };
 
 #include "rpc.cpp"
+
 #endif //RPC_RPC_H
