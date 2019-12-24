@@ -28,7 +28,7 @@ public:
 
     int create_file(std::string path);
 
-    int write_file(std::string path, uint8_t *data, size_t length);
+    int write_file(std::string path,const uint8_t *data, size_t length);
 
     int read_file(std::string path, uint8_t *buf, size_t buf_size, off_t offset);
 

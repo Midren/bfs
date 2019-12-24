@@ -29,7 +29,7 @@ int Rpc::create_file(std::string path) {
     }
 }
 
-int Rpc::write_file(std::string path, uint8_t *data, size_t length) {
+int Rpc::write_file(std::string path,const uint8_t *data, size_t length) {
     static std::string func_signature{"write(string,bytes1[])"};
     bytes bt{};
     for (int i = 0; i < length; i++)
