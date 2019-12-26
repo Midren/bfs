@@ -3,9 +3,10 @@ pragma experimental ABIEncoderV2;
 
 import './File.sol';
 
-contract DirectoryFactory {
+contract DirectoryFactory{
     function dir_create(string _dir_name, string _curr_dir) public returns(Directory){
-        return new Directory(_dir_name, _curr_dir);
+        Directory new_dir = new Directory(_dir_name, _curr_dir, this);
+        return new_dir;
     }
 }
 
@@ -14,21 +15,21 @@ contract Directory {
     Directory dir;
     bool exists;
     }
-    DirectoryFactory factory;
+    DirectoryFactory public factory;
     string dir_name;
     string previous_dir;
     mapping(string => Directory) internal directories;
-    string[] internal dir_names;
+    string[] dir_list;
     mapping(string => File) internal files;
-    string[] file_names;
 
-    constructor(string _name, string _current_dir) public {
+    constructor(string _name, string _current_dir, DirectoryFactory _factory) public {
         dir_name = _name;
         previous_dir = _current_dir;
+        factory = _factory;
     }
     
     function create_file(string _name) public {
-        file_names.push(_name);
+        dir_list.push(_name);
         files[_name] = new File();
     }
     
@@ -40,16 +41,16 @@ contract Directory {
         return files[_file_name].read();
     }
     
-    function get_file_names() view public returns(string[] memory){
-        return file_names;
+    function list_dir() view public returns(string[] memory){
+        return dir_list;
     }
     
-    function get_dir_names() view public returns(string[] memory){
-        return dir_names;
+    function get_file_size(string _file_name) public returns(uint256){
+        return files[_file_name].get_file_size();
     }
 
     function create_directory(string _name) public{
-        dir_names.push(_name);
+        dir_list.push(_name);
         // directories[_name] = Directory_check(factory.dir_create(_name, dir_name), true);
         directories[_name] = factory.dir_create(_name, dir_name);
     }
@@ -62,5 +63,9 @@ contract Directory {
     
     function get_file_by_name(string _name) view public returns(File){
         return files[_name];
+    }
+    
+    function delete_file(string _name) public {
+        delete files[_name];
     }
 }
