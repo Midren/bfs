@@ -9,10 +9,11 @@ find_package(CryptoPP REQUIRED)
 find_package(CURL REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIR} ${CRYPTOPP_INCLUDE_DIR} ${CURL_INCLUDE_DIR})
+add_library(rpc-library rpc.h encode.h encode.cpp curl_wrapper.cpp curl_wrapper.h decode.cpp decode.h)
+target_link_libraries(rpc-library LINK_PUBLIC ${Boost_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${CURL_LIBRARIES})
+
+add_executable(rpc main.cpp)
+target_link_libraries(rpc LINK_PUBLIC rpc-library)
 
 add_executable(BFS rpc.h encode.h encode.cpp curl_wrapper.cpp curl_wrapper.h decode.cpp decode.h ../fuse/bfs_fuse.cpp ../fuse/bfs_fuse.h)
-
-add_executable(rpc main.cpp rpc.h encode.h encode.cpp curl_wrapper.cpp curl_wrapper.h decode.cpp decode.h)
-
-target_link_libraries(BFS LINK_PUBLIC ${Boost_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${CURL_LIBRARIES})
-target_link_libraries(rpc LINK_PUBLIC ${Boost_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${CURL_LIBRARIES})
+target_link_libraries(BFS LINK_PUBLIC rpc-library)
