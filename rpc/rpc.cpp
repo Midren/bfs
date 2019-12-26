@@ -18,7 +18,7 @@ bool Rpc::get_tx_status(const std::string &hash) {
     }
 }
 
-int Rpc::create_file(std::string path) {
+int Rpc::create_file(const std::string &path) {
     static std::string func_signature{"create_file(string)"};
     auto json = form_json(eth_method::sendTx, func_signature, path);
     try {
@@ -29,7 +29,7 @@ int Rpc::create_file(std::string path) {
     }
 }
 
-int Rpc::write_file(std::string path, const uint8_t *data, size_t length) {
+int Rpc::write_file(const std::string &path, const uint8_t *data, size_t length) {
     static std::string func_signature{"write(string,bytes1[])"};
     bytes bt{};
     for (int i = 0; i < length; i++)
@@ -44,7 +44,7 @@ int Rpc::write_file(std::string path, const uint8_t *data, size_t length) {
     return 0;
 }
 
-int Rpc::read_file(std::string path, uint8_t *buf, size_t buf_size, off_t offset) {
+int Rpc::read_file(const std::string &path, uint8_t *buf, size_t buf_size, off_t offset) {
     static std::string func_signature{"read(string)"};
     auto json = form_json(eth_method::call, func_signature, path);
     try {
@@ -57,7 +57,7 @@ int Rpc::read_file(std::string path, uint8_t *buf, size_t buf_size, off_t offset
     }
 }
 
-ssize_t Rpc::get_file_size(std::string path) {
+ssize_t Rpc::get_file_size(const std::string &path) {
     static std::string func_signature{"get_file_size(string)"};
     auto json = form_json(eth_method::call, func_signature, path);
     try {
@@ -68,7 +68,7 @@ ssize_t Rpc::get_file_size(std::string path) {
     }
 }
 
-int Rpc::remove_file(std::string path) {
+int Rpc::remove_file(const std::string &path) {
     static std::string func_signature{"delete_file(string)"};
     auto json = form_json(eth_method::sendTx, func_signature, path);
     try {
@@ -79,7 +79,7 @@ int Rpc::remove_file(std::string path) {
     }
 }
 
-int Rpc::create_dir(std::string path) {
+int Rpc::create_dir(const std::string &path) {
     static std::string func_signature{"make_directory(string)"};
     auto json = form_json(eth_method::sendTx, func_signature, path);
     try {
@@ -90,8 +90,8 @@ int Rpc::create_dir(std::string path) {
     }
 }
 
-std::vector<std::string> Rpc::list_dir(std::string path) {
-    static std::string func_signature{"list(string)"};
+std::vector<std::string> Rpc::list_dir(const std::string &path) {
+    static std::string func_signature{"list_dir(string)"};
     auto json = form_json(eth_method::call, func_signature, path);
     try {
         return decode_strings(process_json(eth_method::call, curl.send_request(json)));
@@ -101,7 +101,7 @@ std::vector<std::string> Rpc::list_dir(std::string path) {
     }
 }
 
-int Rpc::remove_dir(std::string path) {
+int Rpc::remove_dir(const std::string &path) {
     //TODO: Implement after adding fucntion on Solidity part
     return -1;
 }

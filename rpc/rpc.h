@@ -26,23 +26,24 @@ public:
 
     /* Work with files */
 
-    int create_file(std::string path);
+    int create_file(const std::string &path);
 
-    int write_file(std::string path,const uint8_t *data, size_t length);
+    int write_file(const std::string &path, const uint8_t *data, size_t length);
 
-    int read_file(std::string path, uint8_t *buf, size_t buf_size, off_t offset);
+    int read_file(const std::string &path, uint8_t *buf, size_t buf_size, off_t offset);
 
-    ssize_t get_file_size(std::string path);
+    ssize_t get_file_size(const std::string &path);
 
-    int remove_file(std::string path);
+    int remove_file(const std::string &path);
 
     /* Work with directories */
 
-    int create_dir(std::string path);
+    int create_dir(const std::string &path);
 
-    std::vector<std::string> list_dir(std::string path);
+    std::vector<std::string> list_dir(const std::string &path);
 
-    int remove_dir(std::string path);
+    int remove_dir(const std::string &path);
+
 
 private:
     bytes fromAddr;

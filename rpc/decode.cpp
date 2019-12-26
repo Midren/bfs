@@ -58,6 +58,8 @@ std::string decode_string(const std::string &str) {
 
 std::vector<std::string> decode_strings(const std::string &str) {
     std::vector<std::string> res;
+    if (!str.length())
+        return res;
     size_t st_index = str.substr(0, 2) == "0x" ? 2 : 0;
     const size_t len = decode_uint256(str.substr(st_index, 64));
     st_index += 64;
