@@ -7,7 +7,8 @@ import "github.com/Arachnid/solidity-stringutils/strings.sol";
 
 contract MemoryManager{
     using strings for *;
-    Directory root_directory = new Directory("/", "/");
+    DirectoryFactory fact = new DirectoryFactory();
+    Directory root_directory = new Directory("/", "/", fact);
     
     function split_into_array(string memory path, string memory _delim) private returns(string[]){
         var s = path.toSlice();
@@ -33,7 +34,7 @@ contract MemoryManager{
     function create_file(string memory path) public returns(string[] memory){
         var (current_dir, file_name) = find_file(path);
         current_dir.create_file(file_name);
-        return current_dir.get_file_names();
+        return current_dir.list_dir();
     }
     
     function write(string memory path, byte[] memory data) public {
@@ -49,6 +50,21 @@ contract MemoryManager{
     function make_directory(string path) public returns(string[] memory){
         var (current_dir, dir_name) = find_file(path);
         current_dir.create_directory(dir_name);
-        return current_dir.get_dir_names();
+        return current_dir.list_dir();
+    }
+    
+    function get_file_size(string memory path) public returns(uint256) {
+        var (current_dir, file_name) = find_file(path);
+        return current_dir.get_file_size(file_name);
+    }
+    
+    function delete_file(string memory path) public {
+        var (current_dir, dir_name) = find_file(path);
+        current_dir.delete_file(path);
+    }
+    
+    function list_dir(string memory path) view public returns(string[] memory){
+        var (current_dir, dir_name) = find_file(path);
+        return current_dir.list_dir();
     }
 }
