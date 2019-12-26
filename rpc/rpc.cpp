@@ -29,7 +29,7 @@ int Rpc::create_file(std::string path) {
     }
 }
 
-int Rpc::write_file(std::string path,const uint8_t *data, size_t length) {
+int Rpc::write_file(std::string path, const uint8_t *data, size_t length) {
     static std::string func_signature{"write(string,bytes1[])"};
     bytes bt{};
     for (int i = 0; i < length; i++)
@@ -48,15 +48,62 @@ int Rpc::read_file(std::string path, uint8_t *buf, size_t buf_size, off_t offset
     static std::string func_signature{"read(string)"};
     auto json = form_json(eth_method::call, func_signature, path);
     try {
-        auto tmp = curl.send_request(json);
-
-        auto res = decode_bytes(process_json(eth_method::call, tmp));
+        auto res = decode_bytes(process_json(eth_method::call, curl.send_request(json)));
         memcpy(buf, res.data() + offset, std::min(buf_size, res.size() - offset));
         return std::min(buf_size, res.size() - offset);
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return -1;
     }
+}
+
+ssize_t Rpc::get_file_size(std::string path) {
+    static std::string func_signature{"get_file_size(string)"};
+    auto json = form_json(eth_method::call, func_signature, path);
+    try {
+        return decode_uint256(process_json(eth_method::call, curl.send_request(json)));
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return -1;
+    }
+}
+
+int Rpc::remove_file(std::string path) {
+    static std::string func_signature{"delete_file(string)"};
+    auto json = form_json(eth_method::sendTx, func_signature, path);
+    try {
+        return get_tx_status(process_json(eth_method::sendTx, curl.send_request(json)));
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return -1;
+    }
+}
+
+int Rpc::create_dir(std::string path) {
+    static std::string func_signature{"make_directory(string)"};
+    auto json = form_json(eth_method::sendTx, func_signature, path);
+    try {
+        return get_tx_status(process_json(eth_method::sendTx, curl.send_request(json)));
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return -1;
+    }
+}
+
+std::vector<std::string> Rpc::list_dir(std::string path) {
+    static std::string func_signature{"list(string)"};
+    auto json = form_json(eth_method::call, func_signature, path);
+    try {
+        return decode_strings(process_json(eth_method::call, curl.send_request(json)));
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return std::vector<std::string>();
+    }
+}
+
+int Rpc::remove_dir(std::string path) {
+    //TODO: Implement after adding fucntion on Solidity part
+    return -1;
 }
 
 std::string Rpc::process_json(eth_method method, const std::string &json) {
@@ -66,16 +113,16 @@ std::string Rpc::process_json(eth_method method, const std::string &json) {
     if (pt.count("error")) {
         throw std::runtime_error{
                 std::to_string(pt.get<int>("error.code")) + ": " + pt.get<std::string>("error.message")};
-    } else {
-        switch (method) {
-            case eth_method::call:
-            case eth_method::sendTx:
-                return pt.get<std::string>("result");
-            case eth_method::getTxReceipt:
-                if (pt.get_child("result").count("status"))
-                    return pt.get<std::string>("result.status");
-                return "Not mined";
-        }
+    }
+    switch (method) {
+        case eth_method::getTxReceipt:
+            if (pt.get_child("result").count("status"))
+                return pt.get<std::string>("result.status");
+            return "Not mined";
+        case eth_method::call:
+        case eth_method::sendTx:
+        default:
+            return pt.get<std::string>("result");
     }
 }
 
