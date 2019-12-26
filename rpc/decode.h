@@ -21,4 +21,8 @@ byte decode_byte(const std::string &str);
 
 bytes decode_bytes(const std::string &str);
 
+uint64_t decode_uint256(const std::string &str);
+
+std::vector<std::string> decode_strings(const std::string &str);
+
 #endif //RPC_DECODE_H
