@@ -61,12 +61,14 @@ std::vector<std::string> decode_strings(const std::string &str) {
     if (!str.length())
         return res;
     size_t st_index = str.substr(0, 2) == "0x" ? 2 : 0;
+    st_index += 64;
     const size_t len = decode_uint256(str.substr(st_index, 64));
     st_index += 64;
     std::vector<size_t> string_indeces;
-    for (size_t i = 0; i < 64 * len; i += 64)
-        string_indeces.push_back(decode_uint256(str.substr(st_index + i, 64)));
-
+    for (size_t i = 0; i < str.length() - st_index; i += 64) {
+        auto x = decode_uint256(str.substr(st_index + i, 64));
+        string_indeces.push_back(x);
+    }
     for (size_t i = 1; i < len; i++) {
         auto st = st_index + string_indeces[i - 1] * 2, en = st_index + string_indeces[i] * 2;
         res.push_back(decode_string(str.substr(st, en - st)));
