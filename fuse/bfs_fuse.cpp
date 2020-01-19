@@ -30,6 +30,8 @@ int bfs_open(const char *path, struct fuse_file_info *fileInfo) {
 
 int bfs_readdir(const char *path, void *buff, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fileInfo) {
     std::vector<std::string> dirEntries = RPC.list_dir(path);
+    dirEntries.emplace_back(".");
+    dirEntries.emplace_back("..");
     for (const auto &entry:dirEntries) {
         if (filler(buff, entry.data(), nullptr, 0) != 0)
             return -EXIT_FAILURE;
@@ -37,8 +39,20 @@ int bfs_readdir(const char *path, void *buff, fuse_fill_dir_t filler, off_t offs
     return 0;
 }
 
-int bfs_getattr(const char *path, struct stat *st) {
+int bfs_getattr(const char *path, struct stat *stbuf) {
     // TODO: return RPC.stat(path,st)
+    memset(stbuf, 0, sizeof(struct stat));
+
+    if (strcmp(path, "/") == 0) {
+        stbuf->st_mode = S_IFDIR | 0755;
+        stbuf->st_nlink = 2;
+        return 0;
+    }
+
+    stbuf->st_mode = S_IFREG | 0777;
+    stbuf->st_nlink = 1;
+    stbuf->st_size = RPC.get_file_size(path);
+    return 0;
 }
 
 void *bfs_init(struct fuse_conn_info *conn) {
@@ -73,11 +87,11 @@ struct fuse_operations bfs_operations = {
 };
 
 int main(int argc, char *argv[]) {
-//    if ((getuid() == 0) || (geteuid() == 0)) {
-//        std::cout << "[WARNING]:\t Running as root!" << std::endl;
-//    }
-//    if (argc != 3) {
-//        throw std::invalid_argument("Invalid arguments.\n\tBFS [root_directory] [mount_point]");
-//    }
-//    return fuse_main(argc, argv, &bfs_operations);
+    if ((getuid() == 0) || (geteuid() == 0)) {
+        std::cout << "[WARNING]:\t Running as root!" << std::endl;
+    }
+    if (argc != 2) {
+        std::cerr << "Usage: BFS [mountpoint]" << std::endl;
+    }
+    return fuse_main(argc, argv, &bfs_operations, nullptr);
 }
