@@ -82,4 +82,11 @@ contract MemoryManager{
         var (current_dir, dir_name) = find_file(path);
         return current_dir.list_dir();
     }
+    
+    function get_stat_dir(string memory path) public returns(Directory.stat) {
+        var (current_dir, dir_name) = find_file(path);
+        return current_dir.get_stat_dir();
+    }
+    
+    
 }

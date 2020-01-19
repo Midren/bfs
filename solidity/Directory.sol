@@ -13,10 +13,24 @@ contract DirectoryFactory{
 }
 
 contract Directory {
-    struct Directory_check { 
-    Directory dir;
-    bool exists;
+    enum mode_t {S_IFMT, S_IFSOCK, S_IFLNK, S_IFREG, S_IFBLK, S_IFDIR, S_IFCHR, S_IFIFO}
+    
+    struct stat {
+        uint atime;
+        uint mtime;
+        uint ctime;
+        mode_t st_mode;
+        uint dev_t;
+        uint ino;
+        uint uid;
+        uint gid;
+        uint rdev;
+        uint size;
+        uint blk_size;
+        uint blocks;
     }
+    
+    stat entry_stat;
     DirectoryFactory public factory;
     string dir_name;
     string previous_dir;
@@ -28,6 +42,11 @@ contract Directory {
         dir_name = _name;
         previous_dir = _current_dir;
         factory = _factory;
+        uint time = now;
+        entry_stat.atime = time;
+        entry_stat.mtime = time;
+        entry_stat.ctime = time;
+        entry_stat.st_mode = mode_t.S_IFDIR;
     }
     
     function find(string value) returns(uint) {
@@ -83,17 +102,14 @@ contract Directory {
 
     function create_directory(string _name) public{
         dir_list.push(_name);
-        // directories[_name] = Directory_check(factory.dir_create(_name, dir_name), true);
         directories[_name] = factory.dir_create(_name, dir_name);
     }
     
-    function get_dir_by_name(string _name) view public returns(Directory){
-        // require(directories[_name].exists, "Directory doesn`t exist!");
+    function get_dir_by_name(string _name) view public returns(Directory) {
         return directories[_name];
-        
     }
-    
-    function get_file_by_name(string _name) view public returns(File){
+
+    function get_file_by_name(string _name) view public returns(File) {
         return files[_name];
     }
     
@@ -105,5 +121,9 @@ contract Directory {
     function delete_dir(string _name) public {
         delete directories[_name];
         removeByValue(_name);
+    }
+    
+    function get_stat_dir() public returns(stat){
+        return entry_stat;
     }
 }
