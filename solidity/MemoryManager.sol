@@ -42,9 +42,19 @@ contract MemoryManager{
         current_dir.file_write(file_name, data);
     }
     
+    function write(string memory path, byte[] memory data, uint off_t) public {
+        var (current_dir, file_name) = find_file(path);
+        current_dir.file_write(file_name, data, off_t);
+    }
+    
     function read(string memory path) view public returns(byte[] memory){
          var (current_dir, file_name) = find_file(path);
          return current_dir.file_read(file_name);
+    }
+    
+    function read(string memory path, uint256 off_t) view public returns(bytes32){
+         var (current_dir, file_name) = find_file(path);
+         return current_dir.file_read(file_name, off_t);
     }
     
     function make_directory(string path) public returns(string[] memory){
@@ -61,6 +71,11 @@ contract MemoryManager{
     function delete_file(string memory path) public {
         var (current_dir, dir_name) = find_file(path);
         current_dir.delete_file(path);
+    }
+    
+    function delete_directory(string memory path) public {
+        var (current_dir, dir_name) = find_file(path);
+        current_dir.delete_dir(path);
     }
     
     function list_dir(string memory path) view public returns(string[] memory){
