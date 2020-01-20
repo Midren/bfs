@@ -126,4 +126,8 @@ contract Directory {
     function get_stat_dir() public returns(stat){
         return entry_stat;
     }
+    
+    function get_stat_file(string _name) public returns(File.stat){
+        return files[_name].get_stat();
+    }
 }

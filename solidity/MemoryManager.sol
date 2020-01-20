@@ -69,13 +69,13 @@ contract MemoryManager{
     }
     
     function delete_file(string memory path) public {
-        var (current_dir, dir_name) = find_file(path);
-        current_dir.delete_file(path);
+        var (current_dir, file_name) = find_file(path);
+        current_dir.delete_file(file_name);
     }
     
     function delete_directory(string memory path) public {
         var (current_dir, dir_name) = find_file(path);
-        current_dir.delete_dir(path);
+        current_dir.delete_dir(dir_name);
     }
     
     function list_dir(string memory path) view public returns(string[] memory){
@@ -86,6 +86,11 @@ contract MemoryManager{
     function get_stat_dir(string memory path) public returns(Directory.stat) {
         var (current_dir, dir_name) = find_file(path);
         return current_dir.get_stat_dir();
+    }
+    
+    function get_stat_file(string memory path) public returns(File.stat){
+        var (current_dir, file_name) = find_file(path);
+        return current_dir.get_stat_file(file_name);
     }
     
     

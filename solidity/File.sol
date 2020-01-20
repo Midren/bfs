@@ -52,7 +52,7 @@ contract File {
         entry_stat.atime = time;
         entry_stat.mtime = time;
         _data = data;
-        size = data.length;
+        entry_stat.size = data.length;
     }
     
     function write(byte[] memory data, uint off_t) public {
@@ -62,13 +62,14 @@ contract File {
         uint time = now;
         entry_stat.atime = time;
         entry_stat.mtime = time;
+        entry_stat.size = _data.length;
     }
     
     function get_file_size() view public returns(uint256){
-        return size;
+        return entry_stat.size;
     }
     
-    function get_stat() public returns(stat){
+    function get_stat() public returns(File.stat){
         return entry_stat;
     }
 }
