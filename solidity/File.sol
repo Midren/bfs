@@ -1,29 +1,13 @@
 pragma solidity >=0.4.14 <0.5.13;
 
 import './Directory.sol';
+import './Stat.sol';
 pragma experimental ABIEncoderV2;
 
 contract File {
-    enum mode_t {S_IFMT, S_IFSOCK, S_IFLNK, S_IFREG, S_IFBLK, S_IFDIR, S_IFCHR, S_IFIFO} 
-    
-    struct stat {
-        uint atime;
-        uint mtime;
-        uint ctime;
-        mode_t st_mode;
-        uint dev_t;
-        uint ino;
-        uint uid;
-        uint gid;
-        uint rdev;
-        uint size;
-        uint blk_size;
-        uint blocks;
-    }
-    
     byte[] _data;
     uint256 size;
-    stat public entry_stat; 
+    FileStat.stat public entry_stat; 
     
     function read() view public returns(byte[] memory){
         entry_stat.atime = now;
@@ -35,7 +19,7 @@ contract File {
         entry_stat.atime = time;
         entry_stat.mtime = time;
         entry_stat.ctime = time;
-        entry_stat.st_mode = mode_t.S_IFREG;
+        entry_stat.st_mode = FileStat.mode_t.S_IFREG;
     }
     
     function bytesToBytes32(uint offset) public returns (bytes32) {
@@ -69,7 +53,7 @@ contract File {
         return entry_stat.size;
     }
     
-    function get_stat() public returns(File.stat){
+    function get_stat() public returns(FileStat.stat){
         return entry_stat;
     }
 }

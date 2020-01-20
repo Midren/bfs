@@ -2,6 +2,7 @@ pragma solidity >=0.4.14 <0.5.13;
 pragma experimental ABIEncoderV2;
 
 import './File.sol';
+import './Stat.sol';
 import 'https://github.com/ethereum/dapp-bin/blob/master/library/stringUtils.sol';
 
 contract DirectoryFactory{
@@ -13,30 +14,14 @@ contract DirectoryFactory{
 }
 
 contract Directory {
-    enum mode_t {S_IFMT, S_IFSOCK, S_IFLNK, S_IFREG, S_IFBLK, S_IFDIR, S_IFCHR, S_IFIFO}
-    
-    struct stat {
-        uint atime;
-        uint mtime;
-        uint ctime;
-        mode_t st_mode;
-        uint dev_t;
-        uint ino;
-        uint uid;
-        uint gid;
-        uint rdev;
-        uint size;
-        uint blk_size;
-        uint blocks;
-    }
-    
-    stat entry_stat;
+    FileStat.stat entry_stat;
     DirectoryFactory public factory;
     string dir_name;
     string previous_dir;
     mapping(string => Directory) internal directories;
     string[] dir_list;
     mapping(string => File) internal files;
+    string[] file_list;
 
     constructor(string _name, string _current_dir, DirectoryFactory _factory) public {
         dir_name = _name;
@@ -46,32 +31,66 @@ contract Directory {
         entry_stat.atime = time;
         entry_stat.mtime = time;
         entry_stat.ctime = time;
-        entry_stat.st_mode = mode_t.S_IFDIR;
+        entry_stat.st_mode = FileStat.mode_t.S_IFDIR;
     }
     
-    function find(string value) returns(uint) {
+    function find(string value) returns(int) {
         uint i = 0;
-        while (StringUtils.equal(dir_list[i], value) == false) {
+        while (i < dir_list.length) {
+            if(StringUtils.equal(dir_list[i], value) == true) {
+                return int(i);
+            }
             i++;
         }
-        return i;
+        i = 0;
+        while (i < file_list.length) {
+            if(StringUtils.equal(file_list[i], value) == true) {
+                return int(i + dir_list.length);
+            }
+            i++;
+        }
+        return -1;
+        
+    }
+    
+    function is_file(string filename) returns(bool) {
+        int i = find(filename);
+        if(i == -1)
+            return false;
+        if(uint(i) < dir_list.length)
+            return false;
+        else
+            return true;
     }
 
     function removeByValue(string value) {
-        uint i = find(value);
-        removeByIndex(i);
+        int i = find(value);
+        if(i != -1) {
+            if(uint(i) < dir_list.length)
+                removeByIndex(uint(i));
+            else
+                removeByIndex(uint(i) - dir_list.length);
+        }
     }
 
     function removeByIndex(uint i) {
-        while (i<dir_list.length-1) {
-            dir_list[i] = dir_list[i+1];
-            i++;
+        if(uint(i) < dir_list.length) {
+            while (i<dir_list.length-1) {
+                dir_list[i] = dir_list[i+1];
+                i++;
+            }
+            dir_list.length--;
+        } else {
+            while(uint(i) - dir_list.length < file_list.length-1) {
+                file_list[i - dir_list.length] = file_list[i+1 - dir_list.length];
+                i++;
+            }
+            file_list.length--;
         }
-        dir_list.length--;
     }
     
     function create_file(string _name) public {
-        dir_list.push(_name);
+        file_list.push(_name);
         files[_name] = new File();
     }
     
@@ -92,8 +111,13 @@ contract Directory {
     }
     
     
-    function list_dir() view public returns(string[] memory){
-        return dir_list;
+    function list_dir() public returns(string[]){
+        string[] memory files = new string[](dir_list.length + file_list.length);
+        for(uint i = 0; i < file_list.length; i++)
+            files[i] = file_list[i];
+        for(uint j = 0; j < dir_list.length; j++)
+            files[j + file_list.length] = dir_list[j];
+        return files;
     }
     
     function get_file_size(string _file_name) public returns(uint256){
@@ -123,11 +147,11 @@ contract Directory {
         removeByValue(_name);
     }
     
-    function get_stat_dir() public returns(stat){
+    function get_stat_dir() public returns(FileStat.stat){
         return entry_stat;
     }
     
-    function get_stat_file(string _name) public returns(File.stat){
+    function get_stat_file(string _name) public returns(FileStat.stat){
         return files[_name].get_stat();
     }
 }
