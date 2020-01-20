@@ -1,6 +1,7 @@
 #include <iostream>
 #include "decode.h"
 #include <boost/locale.hpp>
+#include <sys/stat.h>
 
 bytes from_hex(const std::string &str) {
     bytes res;
@@ -76,4 +77,22 @@ std::vector<std::string> decode_strings(const std::string &str) {
     auto st = st_index + string_indeces[len - 1] * 2, en = str.length();
     res.push_back(decode_string(str.substr(st, en - st)));
     return res;
+}
+
+int decode_stat_struct(const std::string &str, struct stat *st) {
+    std::vector<uint64_t> values;
+    if (!str.length())
+        return 0;
+    size_t st_index = str.substr(0, 2) == "0x" ? 2 : 0;
+    for (int i = st_index; i < str.length(); i += 64)
+        values.push_back(decode_uint256(str.substr(i, 64)));
+
+    st->st_nlink = 1;
+    st->st_mode = values[2];
+    st->st_size = values[6];
+    st->st_atime = values[9];
+    st->st_mtime = values[10];
+    st->st_ctime = values[11];
+
+    return 0;
 }

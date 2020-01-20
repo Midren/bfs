@@ -6,6 +6,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include "encode.h"
+#include "decode.h"
 #include "curl_wrapper.h"
 
 enum eth_method {
@@ -44,6 +45,7 @@ public:
 
     int remove_dir(const std::string &path);
 
+    int get_stat(const std::string &path, struct stat *st);
 
 private:
     bytes fromAddr;

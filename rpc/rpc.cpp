@@ -106,6 +106,17 @@ int Rpc::remove_dir(const std::string &path) {
     return -1;
 }
 
+int Rpc::get_stat(const std::string &path, struct stat *st) {
+    static std::string func_signature{"get_stat(string)"};
+    auto json = form_json(eth_method::call, func_signature, path);
+    try {
+        return decode_stat_struct(process_json(eth_method::call, curl.send_request(json)), st);
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return -1;
+    }
+}
+
 std::string Rpc::process_json(eth_method method, const std::string &json) {
     boost::property_tree::ptree pt{};
     std::stringstream ss{json};
@@ -154,7 +165,7 @@ std::string Rpc::form_json(eth_method method, const std::string &func_sig, Args.
     }
     if (method == eth_method::sendTx) {
         params.put("value", "0x0");
-        params.put("gas", "0x2dc6c0");
+        params.put("gas", "0xa7d8c0");
     }
     if (method == eth_method::getTxReceipt) {
         boost::property_tree::ptree tx_hash;

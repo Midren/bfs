@@ -14,7 +14,6 @@ typedef unsigned char byte;
 
 typedef std::vector<byte> bytes;
 
-
 bytes from_hex(const std::string &str);
 
 byte decode_byte(const std::string &str);
@@ -22,6 +21,8 @@ byte decode_byte(const std::string &str);
 bytes decode_bytes(const std::string &str);
 
 uint64_t decode_uint256(const std::string &str);
+
+int decode_stat_struct(const std::string &str, struct stat *st);
 
 std::vector<std::string> decode_strings(const std::string &str);
 
