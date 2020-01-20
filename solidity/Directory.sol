@@ -31,7 +31,7 @@ contract Directory {
         entry_stat.atime = time;
         entry_stat.mtime = time;
         entry_stat.ctime = time;
-        entry_stat.st_mode = FileStat.mode_t.S_IFDIR;
+        entry_stat.mode = (40000 | 777);
     }
     
     function find(string value) returns(int) {

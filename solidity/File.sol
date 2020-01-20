@@ -19,7 +19,7 @@ contract File {
         entry_stat.atime = time;
         entry_stat.mtime = time;
         entry_stat.ctime = time;
-        entry_stat.st_mode = FileStat.mode_t.S_IFREG;
+        entry_stat.mode = (100000 | 770);
     }
     
     function bytesToBytes32(uint offset) public returns (bytes32) {

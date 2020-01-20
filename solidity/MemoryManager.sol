@@ -112,3 +112,4 @@ contract MemoryManager{
             return current_dir.get_stat_dir();
     }
 }
+
