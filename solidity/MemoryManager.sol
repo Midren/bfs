@@ -1,4 +1,4 @@
-pragma solidity >=0.4.14 <0.5.13;
+pragma solidity >=0.4.25 <=0.4.26;
 pragma experimental ABIEncoderV2;
 
 import './File.sol';
@@ -36,7 +36,7 @@ contract MemoryManager{
             for(j = prev; j < path_bytes.length; j++) {
                 res1[j-prev] = path_bytes[j];
             }
-            parts[str_num] = string(res);
+            parts[str_num] = string(res1);
         }
         return parts;
     }
@@ -105,7 +105,7 @@ contract MemoryManager{
     }
     
     function get_stat(string memory path) view public returns(FileStat.stat){
-        var (current_dir, file_name) = find_file(path);
+        var (current_dir, file_name) = find_file(path); 
         if(current_dir.is_file(file_name))
             return current_dir.get_stat_file(file_name);
         else

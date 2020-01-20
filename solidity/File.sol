@@ -1,4 +1,4 @@
-pragma solidity >=0.4.14 <0.5.13;
+pragma solidity >=0.4.25 <0.4.26;
 
 import './Directory.sol';
 import './Stat.sol';

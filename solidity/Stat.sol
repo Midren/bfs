@@ -1,4 +1,4 @@
-pragma solidity >=0.4.14 <0.5.13;
+pragma solidity >=0.4.25 <=0.4.26;
 pragma experimental ABIEncoderV2;
     
 library FileStat {
@@ -17,3 +17,4 @@ library FileStat {
         uint ctime;
     }
 }
+    
