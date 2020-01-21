@@ -1,7 +1,7 @@
 #include "bfs_fuse.h"
 #include "../rpc/rpc.h"
 
-static Rpc RPC{"0x00c469eee8b9bc1a331070be0e5814a0bc6f902e", "0x3fDCC710BA867541a2031c25bed49fdA04C2D1b7"};
+static Rpc RPC{"0x00c469eee8b9bc1a331070be0e5814a0bc6f902e", "0xdd8ac7f9f50e465bac369dffabc978ec04183825"};
 
 int bfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *) {
     return RPC.read_file(path, reinterpret_cast<uint8_t *>(buf), size, offset);
@@ -40,18 +40,25 @@ int bfs_readdir(const char *path, void *buff, fuse_fill_dir_t filler, off_t offs
 }
 
 int bfs_getattr(const char *path, struct stat *stbuf) {
-    // TODO: return RPC.stat(path,st)
+    if (strcmp(path, ".") != 0 && strcmp(path, "..") != 0 && strcmp(path, "/") != 0) {
+        RPC.get_stat(path, stbuf);
+//        std::cout << "----------------" << std::endl;
+//        std::cout << path << std::endl;
+//        std::cout << (stbuf->st_mode & S_IFREG) << " " << (stbuf->st_mode & S_IFDIR) << std::endl;
+//        std::cout << (S_IFREG) << " " << (S_IFDIR) << std::endl;
+//        std::cout << "----------------" << std::endl;
+        if (stbuf->st_mode == 0)
+            stbuf = nullptr;
+        return 0;
+    }
     memset(stbuf, 0, sizeof(struct stat));
-
     if (strcmp(path, "/") == 0) {
         stbuf->st_mode = S_IFDIR | 0755;
         stbuf->st_nlink = 2;
         return 0;
     }
-
     stbuf->st_mode = S_IFREG | 0777;
     stbuf->st_nlink = 1;
-    stbuf->st_size = RPC.get_file_size(path);
     return 0;
 }
 

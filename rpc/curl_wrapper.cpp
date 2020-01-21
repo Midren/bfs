@@ -32,13 +32,13 @@ Curl::Curl() {
 std::string Curl::send_request(const std::string &json) {
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, json.length());
-    std::string result;
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
+    std::string *result = new std::string;
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, result);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
     CURLcode res = curl_easy_perform(curl);
     if (res != CURLE_OK)
         throw std::runtime_error("curl_easy_perform() failed: " + std::string(curl_easy_strerror(res)));
-    return result;
+    return *result;
 }
 
 void Curl::cleanup() {
@@ -58,7 +58,7 @@ size_t Curl::write_callback(char *ptr, size_t size, size_t nmemb, void *userdata
     tmpStr[cnt] = '\0';
 
     // store it away in the caller's string
-    (*(std::string *) userdata) += tmpStr;
+    *static_cast<std::string *> (userdata) += tmpStr;
 
     // we handeled everything, tell curl to send more if there is any
     return size * nmemb;

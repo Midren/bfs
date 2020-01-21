@@ -91,7 +91,7 @@ int Rpc::create_dir(const std::string &path) {
 
 std::vector<std::string> Rpc::list_dir(const std::string &path) {
     static std::string func_signature{"list_dir(string)"};
-    auto json = form_json(eth_method::call, func_signature, path);
+    auto json = form_json(eth_method::call, func_signature, path + (path.back() != '/' ? "/" : ""));
     try {
         return decode_strings(process_json(eth_method::call, curl.send_request(json)));
     } catch (const std::exception &e) {

@@ -64,6 +64,8 @@ std::vector<std::string> decode_strings(const std::string &str) {
     size_t st_index = str.substr(0, 2) == "0x" ? 2 : 0;
     st_index += 64;
     const size_t len = decode_uint256(str.substr(st_index, 64));
+    if (len == 0)
+        return res;
     st_index += 64;
     std::vector<size_t> string_indeces;
     for (size_t i = 0; i < str.length() - st_index; i += 64) {

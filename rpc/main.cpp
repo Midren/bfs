@@ -3,7 +3,7 @@
 #include "rpc.h"
 
 int main() {
-    Rpc rpc("0x00c469eee8b9bc1a331070be0e5814a0bc6f902e", "0x50894efcabc8261df7ad1eb0923b7a401f33c522");
+    Rpc rpc("0x00c469eee8b9bc1a331070be0e5814a0bc6f902e", "0xa1a7abceb1c107006722a486fdde8b6d00ffcd03");
     uint8_t data[1024] = {0xAB, 0xBA};
     if (!rpc.create_file("/test.txt")) {
         std::cerr << "Couldn't create file" << std::endl;
