@@ -34,7 +34,7 @@
     "gasLimit": "0x17d7840"
   },
   "accounts": {
-    "00c469eee8b9bc1a331070be0e5814a0bc6f902e": {
+    "/* INSERT HERE YOUR ACCOUNT */": {
         "balance" : "0x200000000000000000000000000000000000000000000000000000000000000"
     }
   }
