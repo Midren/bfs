@@ -55,7 +55,9 @@ Example:
   - [ ] Fix creating files and directories
   - [ ] Fix sometimes problems with writing to a file
 - [ ] Add permission support using Zero knowledge
-- [ ] Add deprolying contract using C++
+- [ ] Add deploying contract using C++
+- [ ] Add tracing transactions, so error message from require can be returned in C++
+- [ ] Add memory storage optmizations in Solidity
 
 ## Documentation
 All documentation can be found in the [wiki](https://github.com/RomanMilishchuk/bfs/wiki) pages.
