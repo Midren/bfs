@@ -8,7 +8,10 @@ int bfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse
 }
 
 int bfs_write(const char *path, const char *data, size_t size, off_t offset, struct fuse_file_info *) {
-    return RPC.write_file(path, reinterpret_cast<const uint8_t *>(data), size); // TODO: Add offset
+    std::cout << "Size: " << size << std::endl;
+    std::cout << "Offset: " << offset << std::endl;
+    if (RPC.write_file(path, reinterpret_cast<const uint8_t *>(data), size)) // TODO: Add offset
+        return size;
 }
 
 int bfs_create_file(const char *path, mode_t mode, dev_t dev) {
