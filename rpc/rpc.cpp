@@ -41,7 +41,6 @@ int Rpc::write_file(const std::string &path, const uint8_t *data, size_t length)
         std::cerr << e.what() << std::endl;
         return -1;
     }
-    return 0;
 }
 
 int Rpc::read_file(const std::string &path, uint8_t *buf, size_t buf_size, off_t offset) {
@@ -102,8 +101,14 @@ std::vector<std::string> Rpc::list_dir(const std::string &path) {
 }
 
 int Rpc::remove_dir(const std::string &path) {
-    //TODO: Implement after adding fucntion on Solidity part
-    return -1;
+    static std::string func_signature{"delete_directory(string)"};
+    auto json = form_json(eth_method::sendTx, func_signature, path);
+    try {
+        return get_tx_status(process_json(eth_method::sendTx, curl.send_request(json)));
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return -1;
+    }
 }
 
 int Rpc::get_stat(const std::string &path, struct stat *st) {

@@ -3,7 +3,7 @@
 #include "rpc.h"
 
 int main() {
-    Rpc rpc("0x00c469eee8b9bc1a331070be0e5814a0bc6f902e", "0xdd8aC7F9F50e465baC369DffAbc978Ec04183825");
+    Rpc rpc("0x00c469eee8b9bc1a331070be0e5814a0bc6f902e", "0x50894efcabc8261df7ad1eb0923b7a401f33c522");
     uint8_t data[1024] = {0xAB, 0xBA};
     if (!rpc.create_file("/test.txt")) {
         std::cerr << "Couldn't create file" << std::endl;
@@ -38,5 +38,8 @@ int main() {
     std::cout << "Mode for file: " << st->st_mode << std::endl;
     std::cout << "Size of file: " << st->st_size << std::endl;
     delete (st);
+    if(!rpc.remove_file("/test.txt")){
+        std::cerr << "Couldn't delete test.txt" << std::endl;
+    }
     return 0;
 }
