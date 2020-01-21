@@ -13,13 +13,13 @@ Depends on the next C++ libraries:
 - Boost
 - Crypto++
 - Curl
+- FUSE
 
 For Ubuntu:
 ```sh
-sudo apt install libboost-all-dev libcrypto++-dev libcurl4-gnutls-dev
+sudo apt install libboost-all-dev libcrypto++-dev libcurl4-gnutls-dev libfuse-dev
 ```
 ### Build
-Compile:
 ```sh
 mkdir build
 cd build
