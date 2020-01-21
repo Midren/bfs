@@ -1,25 +1,5 @@
 #include "curl_wrapper.h"
 
-//CURL *curlPtr(bool cleanup) {
-//    static CURL *curl = nullptr;
-//    static struct curl_slist *headers = nullptr;
-//    if (!curl) {
-//        curl = curl_easy_init();
-//        if (!curl) {
-//            std::cerr << "Curl failed to initialize. Quitting..." << std::endl;
-//            exit(0);
-//        }
-//        headers = curl_slist_append(headers, "Content-Type: application/json");
-//        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-//        curl_easy_setopt(curl, CURLOPT_URL, "http:/""/localhost:8545");
-//    } else if (cleanup) {
-//        if (headers) curl_slist_free_all(headers);
-//        if (curl) curl_easy_cleanup(curl);
-//        curl = nullptr;
-//    }
-//    return curl;
-//}
-
 Curl::Curl() {
     curl = curl_easy_init();
     if (!curl)
